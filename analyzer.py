@@ -31,19 +31,18 @@ NEWS ITEMS:
 """
 
 def analyze_with_api(prompt):
-    """Use Anthropic API via gateway"""
+    """Use OpenAI-compatible API via gateway"""
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     base_url = os.environ.get("ANTHROPIC_BASE_URL", "https://sky.tinyandbeautiful.com")
 
     response = requests.post(
-        f"{base_url}/v1/messages",
+        f"{base_url}/v1/chat/completions",
         headers={
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
+            "Authorization": f"Bearer {api_key}",
             "content-type": "application/json"
         },
         json={
-            "model": "claude-sonnet-4-20250514",
+            "model": "claude-sonnet-4-5-20250929",
             "max_tokens": 4096,
             "messages": [{"role": "user", "content": prompt}]
         },
@@ -51,7 +50,7 @@ def analyze_with_api(prompt):
     )
 
     if response.status_code == 200:
-        return response.json()["content"][0]["text"]
+        return response.json()["choices"][0]["message"]["content"]
     else:
         raise Exception(f"API error: {response.status_code} - {response.text}")
 
