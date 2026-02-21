@@ -259,22 +259,23 @@ def generate_report_image(analysis, news_items, output_path):
 
     threat_y = y + 70
     for item in sections['threats'][:6]:
-        if '🔴' in item or '高' in item or 'high' in item.lower():
+        if '🔴' in item or '高风险' in item:
             color = COLORS['threat_high']
-            level = "HIGH"
-        elif '🟡' in item or '中' in item or 'medium' in item.lower():
+            level = "高"
+        elif '🟡' in item or '中风险' in item:
             color = COLORS['threat_medium']
-            level = "MED"
+            level = "中"
         else:
             color = COLORS['threat_low']
-            level = "LOW"
+            level = "低"
 
-        clean_item = re.sub(r'[🔴🟡🟢]', '', item).strip()
-        clean_item = re.sub(r'(高|中|低)\s*[-|]?\s*', '', clean_item)[:55]
+        clean_item = re.sub(r'[🔴🟡🟢⭐]', '', item).strip()
+        clean_item = re.sub(r'(高风险|中风险|低风险|高价值|中价值|低价值)\s*[-–—]?\s*', '', clean_item)
+        clean_item = clean_item[:50] + ('...' if len(clean_item) > 50 else '')
 
-        draw_rounded_rect(draw, (margin + 25, threat_y, margin + 68, threat_y + 20), radius=4, fill=hex_to_rgb(color))
-        draw.text((margin + 30, threat_y + 2), level, font=font_small, fill=hex_to_rgb(COLORS['bg_dark']))
-        draw.text((margin + 78, threat_y), clean_item, font=font_small, fill=hex_to_rgb(COLORS['text_light']))
+        draw_rounded_rect(draw, (margin + 25, threat_y, margin + 58, threat_y + 20), radius=4, fill=hex_to_rgb(color))
+        draw.text((margin + 33, threat_y + 2), level, font=font_small, fill=hex_to_rgb(COLORS['bg_dark']))
+        draw.text((margin + 68, threat_y), clean_item, font=font_small, fill=hex_to_rgb(COLORS['text_light']))
         threat_y += 38
 
     # Opportunities Card
@@ -289,18 +290,19 @@ def generate_report_image(analysis, news_items, output_path):
     opp_y = y + 70
     for item in sections['opportunities'][:6]:
         star_count = item.count('⭐')
-        if star_count >= 3 or '高' in item or 'high' in item.lower():
+        if star_count >= 3 or '高价值' in item:
             stars = "★★★"
             color = COLORS['accent_green']
-        elif star_count >= 2 or '中' in item or 'medium' in item.lower():
+        elif star_count >= 2 or '中价值' in item:
             stars = "★★☆"
             color = COLORS['accent_yellow']
         else:
             stars = "★☆☆"
             color = COLORS['text_muted']
 
-        clean_item = re.sub(r'[⭐]', '', item).strip()
-        clean_item = re.sub(r'(高|中|低)\s*[-|]?\s*', '', clean_item)[:55]
+        clean_item = re.sub(r'[🔴🟡🟢⭐]', '', item).strip()
+        clean_item = re.sub(r'(高风险|中风险|低风险|高价值|中价值|低价值)\s*[-–—]?\s*', '', clean_item)
+        clean_item = clean_item[:50] + ('...' if len(clean_item) > 50 else '')
 
         draw.text((opp_x + 25, opp_y), stars, font=font_small, fill=hex_to_rgb(color))
         draw.text((opp_x + 78, opp_y), clean_item, font=font_small, fill=hex_to_rgb(COLORS['text_light']))
