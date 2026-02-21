@@ -241,7 +241,7 @@ def generate_report_image(analysis, news_items, output_path):
 
     summary_y = y + 70
     for item in summary_items:
-        item_text = item[:85] + ('...' if len(item) > 85 else '')
+        item_text = item[:55] + ('...' if len(item) > 55 else '')
         draw.ellipse([(margin + 25, summary_y + 6), (margin + 33, summary_y + 14)], fill=hex_to_rgb(COLORS['accent_cyan']))
         draw.text((margin + 45, summary_y), item_text, font=font_body, fill=hex_to_rgb(COLORS['text_light']))
         summary_y += 32
@@ -274,7 +274,7 @@ def generate_report_image(analysis, news_items, output_path):
 
         clean_item = re.sub(r'[🔴🟡🟢⭐]', '', item).strip()
         clean_item = re.sub(r'(高风险|中风险|低风险|高价值|中价值|低价值)\s*[-–—]?\s*', '', clean_item)
-        clean_item = clean_item[:50] + ('...' if len(clean_item) > 50 else '')
+        clean_item = clean_item[:28] + ('...' if len(clean_item) > 28 else '')
 
         draw_rounded_rect(draw, (margin + 25, threat_y, margin + 58, threat_y + 20), radius=4, fill=hex_to_rgb(color))
         draw.text((margin + 33, threat_y + 2), level, font=font_small, fill=hex_to_rgb(COLORS['bg_dark']))
@@ -305,7 +305,7 @@ def generate_report_image(analysis, news_items, output_path):
 
         clean_item = re.sub(r'[🔴🟡🟢⭐]', '', item).strip()
         clean_item = re.sub(r'(高风险|中风险|低风险|高价值|中价值|低价值)\s*[-–—]?\s*', '', clean_item)
-        clean_item = clean_item[:50] + ('...' if len(clean_item) > 50 else '')
+        clean_item = clean_item[:28] + ('...' if len(clean_item) > 28 else '')
 
         draw.text((opp_x + 25, opp_y), stars, font=font_small, fill=hex_to_rgb(color))
         draw.text((opp_x + 78, opp_y), clean_item, font=font_small, fill=hex_to_rgb(COLORS['text_light']))
@@ -325,7 +325,7 @@ def generate_report_image(analysis, news_items, output_path):
 
     trend_y = y + 70
     for item in trend_items:
-        item_text = item[:95] + ('...' if len(item) > 95 else '')
+        item_text = item[:60] + ('...' if len(item) > 60 else '')
         draw.text((margin + 25, trend_y), "→", font=font_body, fill=hex_to_rgb(COLORS['accent_yellow']))
         draw.text((margin + 50, trend_y), item_text, font=font_body, fill=hex_to_rgb(COLORS['text_light']))
         trend_y += 32
@@ -344,7 +344,7 @@ def generate_report_image(analysis, news_items, output_path):
 
     action_y = y + 70
     for i, item in enumerate(action_items):
-        item_text = item[:90] + ('...' if len(item) > 90 else '')
+        item_text = item[:58] + ('...' if len(item) > 58 else '')
         draw_rounded_rect(draw, (margin + 25, action_y, margin + 48, action_y + 22), radius=5, fill=hex_to_rgb(COLORS['accent_purple']))
         draw.text((margin + 32, action_y + 3), str(i + 1), font=font_small, fill=hex_to_rgb(COLORS['text_white']))
         draw.text((margin + 60, action_y + 2), item_text, font=font_body, fill=hex_to_rgb(COLORS['text_light']))
