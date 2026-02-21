@@ -21,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install feedparser requests pillow
+          pip install feedparser requests pillow beautifulsoup4
 
       - name: Install Claude CLI
         run: |
