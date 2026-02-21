@@ -103,28 +103,31 @@ def parse_analysis_sections(analysis):
         if line_stripped == '|' or line_stripped.replace('-', '').replace('|', '').strip() == '':
             continue
 
-        # Detect section headers (Chinese and English)
-        if '执行摘要' in line or 'executive summary' in line_lower or ('summary' in line_lower and '#' in line):
-            current_section = 'summary'
-            continue
-        elif '技术趋势' in line or 'technology trend' in line_lower or ('trend' in line_lower and '#' in line):
-            current_section = 'trends'
-            continue
-        elif '竞争' in line or 'competitive' in line_lower or 'competitor' in line_lower:
-            current_section = 'competitive'
-            continue
-        elif '硬件' in line or 'hardware' in line_lower:
-            current_section = 'hardware'
-            continue
-        elif '威胁' in line or 'threat' in line_lower:
-            current_section = 'threats'
-            continue
-        elif '机遇' in line or '机会' in line or 'opportunit' in line_lower:
-            current_section = 'opportunities'
-            continue
-        elif '建议' in line or '行动' in line or 'action' in line_lower or 'recommend' in line_lower:
-            current_section = 'actions'
-            continue
+        # Detect section headers (Chinese and English) - only match header lines
+        is_header = line_stripped.startswith('#') or line_stripped.startswith('**') or (line_stripped.endswith('**') and '**' in line_stripped[:5])
+
+        if is_header or re.match(r'^\d+\.\s*\*\*', line_stripped):
+            if '执行摘要' in line or 'executive summary' in line_lower:
+                current_section = 'summary'
+                continue
+            elif '技术趋势' in line or 'technology trend' in line_lower:
+                current_section = 'trends'
+                continue
+            elif '竞争' in line or 'competitive' in line_lower:
+                current_section = 'competitive'
+                continue
+            elif '硬件' in line or 'hardware' in line_lower:
+                current_section = 'hardware'
+                continue
+            elif '威胁' in line or 'threat' in line_lower:
+                current_section = 'threats'
+                continue
+            elif '机遇' in line or '机会' in line or 'opportunit' in line_lower:
+                current_section = 'opportunities'
+                continue
+            elif '建议' in line or '行动' in line or 'action' in line_lower or 'recommend' in line_lower:
+                current_section = 'actions'
+                continue
 
         # Parse content
         if current_section and line_stripped:
