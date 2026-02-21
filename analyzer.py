@@ -3,6 +3,7 @@
 
 import os
 import subprocess
+import requests
 
 ANALYSIS_PROMPT = """You are a strategic analyst for Lenovo Group. Analyze the following AI news and provide:
 
@@ -29,8 +30,44 @@ NEWS ITEMS:
 {news_content}
 """
 
+def analyze_with_api(prompt):
+    """Use Anthropic API via gateway"""
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    base_url = os.environ.get("ANTHROPIC_BASE_URL", "https://sky.tinyandbeautiful.com")
+
+    response = requests.post(
+        f"{base_url}/v1/messages",
+        headers={
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        },
+        json={
+            "model": "claude-sonnet-4-20250514",
+            "max_tokens": 4096,
+            "messages": [{"role": "user", "content": prompt}]
+        },
+        timeout=300
+    )
+
+    if response.status_code == 200:
+        return response.json()["content"][0]["text"]
+    else:
+        raise Exception(f"API error: {response.status_code} - {response.text}")
+
+def analyze_with_cli(prompt):
+    """Use Claude CLI for local execution"""
+    result = subprocess.run(
+        ['claude', '-p', prompt, '--model', 'sonnet'],
+        capture_output=True, text=True, timeout=600
+    )
+    if result.returncode == 0:
+        return result.stdout
+    else:
+        raise Exception(f"Claude CLI error: {result.stderr}")
+
 def analyze_news(news_items):
-    """Use Claude CLI to analyze news for Lenovo impact"""
+    """Analyze news for Lenovo impact"""
     news_items = news_items[:25]
 
     news_content = ""
@@ -43,15 +80,11 @@ def analyze_news(news_items):
 
     prompt = ANALYSIS_PROMPT.format(news_content=news_content)
 
-    result = subprocess.run(
-        ['claude', '-p', prompt, '--model', 'sonnet'],
-        capture_output=True, text=True, timeout=600
-    )
-
-    if result.returncode == 0:
-        return result.stdout
+    # Use API if ANTHROPIC_API_KEY is set, otherwise use CLI
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        return analyze_with_api(prompt)
     else:
-        raise Exception(f"Claude CLI error: {result.stderr}")
+        return analyze_with_cli(prompt)
 
 if __name__ == "__main__":
     print("Analyzer module loaded successfully")

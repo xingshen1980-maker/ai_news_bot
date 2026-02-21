@@ -12,8 +12,8 @@ from email import encoders
 # QQ Mail SMTP settings
 SMTP_SERVER = "smtp.qq.com"
 SMTP_PORT = 465
-SENDER_EMAIL = "24318868@qq.com"
-SENDER_PASSWORD = "cdxdjhsvmahbbijg"
+SENDER_EMAIL = os.environ.get("QQ_EMAIL", "24318868@qq.com")
+SENDER_PASSWORD = os.environ.get("QQ_AUTH_CODE", "cdxdjhsvmahbbijg")
 
 def send_email(to_email, subject, html_content, image_path=None):
     """Send email via QQ Mail SMTP with optional image attachment"""

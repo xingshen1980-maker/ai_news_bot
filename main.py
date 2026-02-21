@@ -13,7 +13,7 @@ from image_generator import generate_report_image
 from email_sender import send_email
 
 # Configuration
-RECIPIENT_EMAIL = "24318868@qq.com"
+RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL", "24318868@qq.com")
 LOG_FILE = os.path.join(os.path.dirname(__file__), "bot.log")
 REPORT_IMAGE = os.path.join(os.path.dirname(__file__), "report.png")
 
