@@ -2,8 +2,7 @@
 """AI News Analyzer - Analyze news for Lenovo threats and opportunities"""
 
 import os
-import json
-import subprocess
+import requests
 
 ANALYSIS_PROMPT = """You are a strategic analyst for Lenovo Group. Analyze the following AI news and provide:
 
@@ -31,8 +30,7 @@ NEWS ITEMS:
 """
 
 def analyze_news(news_items):
-    """Use Claude CLI to analyze news for Lenovo impact"""
-    # Limit to top 25 news items
+    """Use Anthropic API to analyze news for Lenovo impact"""
     news_items = news_items[:25]
 
     news_content = ""
@@ -45,16 +43,29 @@ def analyze_news(news_items):
 
     prompt = ANALYSIS_PROMPT.format(news_content=news_content)
 
-    result = subprocess.run(
-        ['claude', '-p', prompt, '--model', 'sonnet'],
-        capture_output=True, text=True, timeout=600
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise Exception("ANTHROPIC_API_KEY not set")
+
+    response = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        },
+        json={
+            "model": "claude-sonnet-4-20250514",
+            "max_tokens": 4096,
+            "messages": [{"role": "user", "content": prompt}]
+        },
+        timeout=300
     )
 
-    if result.returncode == 0:
-        return result.stdout
+    if response.status_code == 200:
+        return response.json()["content"][0]["text"]
     else:
-        raise Exception(f"Claude CLI error: {result.stderr}")
+        raise Exception(f"API error: {response.status_code} - {response.text}")
 
 if __name__ == "__main__":
-    sample_news = [{"source": "Test", "title": "Test News", "summary": "Test summary", "link": ""}]
     print("Analyzer module loaded successfully")

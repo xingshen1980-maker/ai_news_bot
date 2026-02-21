@@ -23,10 +23,6 @@ jobs:
         run: |
           pip install feedparser requests pillow beautifulsoup4
 
-      - name: Install Claude CLI
-        run: |
-          npm install -g @anthropic-ai/claude-code
-
       - name: Install fonts
         run: |
           sudo apt-get update
