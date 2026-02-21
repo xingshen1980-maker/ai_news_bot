@@ -42,7 +42,7 @@ def analyze_with_api(prompt):
             "content-type": "application/json"
         },
         json={
-            "model": "claude-sonnet-4-5-20250929",
+            "model": "claude-opus-4-5-20251101",
             "max_tokens": 4096,
             "messages": [
                 {"role": "system", "content": "You are a strategic business analyst. Provide detailed analysis as requested."},
