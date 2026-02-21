@@ -5,28 +5,28 @@ import os
 import subprocess
 import requests
 
-ANALYSIS_PROMPT = """You are a strategic analyst for Lenovo Group. Analyze the following AI news and provide:
+ANALYSIS_PROMPT = """你是联想集团的战略分析师。请用中文分析以下AI新闻，提供：
 
-1. **Executive Summary** (3-5 bullet points of the most important news)
+1. **执行摘要** (3-5个最重要新闻的要点)
 
-2. **Technology Trends** - Key AI technology developments
+2. **技术趋势** - 关键AI技术发展
 
-3. **Competitive Landscape** - What competitors (Dell, HP, Apple, Microsoft, etc.) are doing
+3. **竞争格局** - 竞争对手（戴尔、惠普、苹果、微软等）的动态
 
-4. **Hardware Developments** - AI chips, servers, edge devices, AI PCs
+4. **硬件发展** - AI芯片、服务器、边缘设备、AI PC
 
-5. **Threats to Lenovo** - Potential risks and challenges
-   - Rate each threat: 🔴 High | 🟡 Medium | 🟢 Low
+5. **威胁分析** - 对联想的潜在风险和挑战
+   - 每条威胁用以下格式：🔴 高风险 / 🟡 中风险 / 🟢 低风险 - 具体描述
 
-6. **Opportunities for Lenovo** - Potential growth areas
-   - Rate each opportunity: ⭐⭐⭐ High | ⭐⭐ Medium | ⭐ Low
+6. **机遇分析** - 潜在增长领域
+   - 每条机遇用以下格式：⭐⭐⭐ 高价值 / ⭐⭐ 中价值 / ⭐ 低价值 - 具体描述
 
-7. **Recommended Actions** - Specific suggestions for Lenovo
+7. **建议行动** - 对联想的具体建议
 
-Please be concise and actionable. Focus on business impact.
+请简洁、可操作，聚焦商业影响。不要使用表格格式，使用列表格式。
 
 ---
-NEWS ITEMS:
+新闻内容:
 {news_content}
 """
 
@@ -45,7 +45,7 @@ def analyze_with_api(prompt):
             "model": "claude-opus-4-5-20251101",
             "max_tokens": 4096,
             "messages": [
-                {"role": "system", "content": "You are a strategic business analyst. Provide detailed analysis as requested."},
+                {"role": "system", "content": "你是一位专业的商业战略分析师。请用中文提供详细分析。"},
                 {"role": "user", "content": prompt}
             ]
         },
