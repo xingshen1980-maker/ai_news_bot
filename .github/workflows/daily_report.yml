@@ -1,0 +1,42 @@
+name: Daily AI News Report
+
+on:
+  schedule:
+    # 每天北京时间8点运行 (UTC 0点)
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install feedparser requests pillow
+
+      - name: Install Claude CLI
+        run: |
+          npm install -g @anthropic-ai/claude-code
+
+      - name: Install fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk
+
+      - name: Run AI News Bot
+        env:
+          QQ_EMAIL: ${{ secrets.QQ_EMAIL }}
+          QQ_AUTH_CODE: ${{ secrets.QQ_AUTH_CODE }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python main.py
