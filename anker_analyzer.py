@@ -31,23 +31,24 @@ ANALYSIS_PROMPT = """你是安克创新(Anker Innovations)的战略分析师。�
 """
 
 def analyze_with_api(prompt, max_retries=10):
-    """Use OpenAI-compatible API via gateway with retry"""
+    """Use Anthropic native API format via gateway with retry"""
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     base_url = os.environ.get("ANTHROPIC_BASE_URL", "https://sky.tinyandbeautiful.com")
 
     for attempt in range(max_retries):
         try:
             response = requests.post(
-                f"{base_url}/v1/chat/completions",
+                f"{base_url}/v1/messages",
                 headers={
-                    "Authorization": f"Bearer {api_key}",
+                    "x-api-key": api_key,
+                    "anthropic-version": "2023-06-01",
                     "content-type": "application/json"
                 },
                 json={
                     "model": "claude-opus-4-5-20251101",
                     "max_tokens": 4096,
+                    "system": "你是一位专业的消费电子行业战略分析师。请用中文提供详细分析。",
                     "messages": [
-                        {"role": "system", "content": "你是一位专业的消费电子行业战略分析师。请用中文提供详细分析。"},
                         {"role": "user", "content": prompt}
                     ]
                 },
@@ -55,7 +56,7 @@ def analyze_with_api(prompt, max_retries=10):
             )
 
             if response.status_code == 200:
-                return response.json()["choices"][0]["message"]["content"]
+                return response.json()["content"][0]["text"]
             else:
                 print(f"Attempt {attempt + 1} failed: {response.status_code} - {response.text[:200]}")
                 time.sleep(20)
