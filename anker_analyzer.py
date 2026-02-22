@@ -30,7 +30,7 @@ ANALYSIS_PROMPT = """你是安克创新(Anker Innovations)的战略分析师。�
 {news_content}
 """
 
-def analyze_with_api(prompt, max_retries=5):
+def analyze_with_api(prompt, max_retries=10):
     """Use OpenAI-compatible API via gateway with retry"""
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     base_url = os.environ.get("ANTHROPIC_BASE_URL", "https://sky.tinyandbeautiful.com")
@@ -44,25 +44,25 @@ def analyze_with_api(prompt, max_retries=5):
                     "content-type": "application/json"
                 },
                 json={
-                    "model": "claude-3-5-sonnet-20241022",
+                    "model": "claude-opus-4-5-20251101",
                     "max_tokens": 4096,
                     "messages": [
                         {"role": "system", "content": "你是一位专业的消费电子行业战略分析师。请用中文提供详细分析。"},
                         {"role": "user", "content": prompt}
                     ]
                 },
-                timeout=600
+                timeout=300
             )
 
             if response.status_code == 200:
                 return response.json()["choices"][0]["message"]["content"]
             else:
                 print(f"Attempt {attempt + 1} failed: {response.status_code} - {response.text[:200]}")
-                time.sleep(15)
+                time.sleep(20)
                 continue
         except requests.exceptions.Timeout:
             print(f"Attempt {attempt + 1} timed out, retrying...")
-            time.sleep(10)
+            time.sleep(20)
             continue
 
     raise Exception("API failed after max retries")
