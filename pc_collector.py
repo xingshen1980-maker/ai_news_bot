@@ -4,6 +4,7 @@
 import requests
 import feedparser
 from datetime import datetime, timedelta
+from urllib.parse import quote
 
 # PC brands and keywords
 PC_BRANDS = ['dell', 'hp', 'lenovo', 'apple', 'macbook', 'thinkpad', 'xps', 'spectre', 'pavilion']
@@ -23,7 +24,8 @@ def fetch_google_news_pc():
 
     for term in search_terms:
         try:
-            url = f"https://news.google.com/rss/search?q={term}&hl=en-US&gl=US&ceid=US:en"
+            encoded_term = quote(term)
+            url = f"https://news.google.com/rss/search?q={encoded_term}&hl=en-US&gl=US&ceid=US:en"
             feed = feedparser.parse(url)
             for entry in feed.entries[:5]:
                 news_items.append({
