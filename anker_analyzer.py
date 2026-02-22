@@ -2,6 +2,7 @@
 """Anker News Analyzer - Analyze news for Anker competitive intelligence"""
 
 import os
+import time
 import requests
 
 ANALYSIS_PROMPT = """你是安克创新(Anker Innovations)的战略分析师。请用中文分析以下一周的行业新闻，提供：
@@ -29,32 +30,44 @@ ANALYSIS_PROMPT = """你是安克创新(Anker Innovations)的战略分析师。�
 {news_content}
 """
 
-def analyze_with_api(prompt):
-    """Use OpenAI-compatible API via gateway"""
+def analyze_with_api(prompt, max_retries=3):
+    """Use OpenAI-compatible API via gateway with retry"""
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     base_url = os.environ.get("ANTHROPIC_BASE_URL", "https://sky.tinyandbeautiful.com")
 
-    response = requests.post(
-        f"{base_url}/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "content-type": "application/json"
-        },
-        json={
-            "model": "claude-opus-4-5-20251101",
-            "max_tokens": 4096,
-            "messages": [
-                {"role": "system", "content": "你是一位专业的消费电子行业战略分析师。请用中文提供详细分析。"},
-                {"role": "user", "content": prompt}
-            ]
-        },
-        timeout=300
-    )
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(
+                f"{base_url}/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "content-type": "application/json"
+                },
+                json={
+                    "model": "claude-opus-4-5-20251101",
+                    "max_tokens": 4096,
+                    "messages": [
+                        {"role": "system", "content": "你是一位专业的消费电子行业战略分析师。请用中文提供详细分析。"},
+                        {"role": "user", "content": prompt}
+                    ]
+                },
+                timeout=600
+            )
 
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"]
-    else:
-        raise Exception(f"API error: {response.status_code} - {response.text}")
+            if response.status_code == 200:
+                return response.json()["choices"][0]["message"]["content"]
+            elif response.status_code >= 500 or "timeout" in response.text.lower():
+                print(f"Attempt {attempt + 1} failed, retrying...")
+                time.sleep(10)
+                continue
+            else:
+                raise Exception(f"API error: {response.status_code} - {response.text}")
+        except requests.exceptions.Timeout:
+            print(f"Attempt {attempt + 1} timed out, retrying...")
+            time.sleep(10)
+            continue
+
+    raise Exception("API failed after max retries")
 
 def analyze_anker_news(news_items):
     """Analyze news for Anker impact"""

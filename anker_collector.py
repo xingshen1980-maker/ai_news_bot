@@ -4,7 +4,7 @@
 import requests
 import feedparser
 from datetime import datetime, timedelta
-from bs4 import BeautifulSoup
+from urllib.parse import quote
 
 # Anker related keywords
 ANKER_KEYWORDS = [
@@ -26,7 +26,8 @@ def fetch_google_news_anker():
 
     for term in search_terms:
         try:
-            url = f"https://news.google.com/rss/search?q={term}&hl=en-US&gl=US&ceid=US:en"
+            encoded_term = quote(term)
+            url = f"https://news.google.com/rss/search?q={encoded_term}&hl=en-US&gl=US&ceid=US:en"
             feed = feedparser.parse(url)
             for entry in feed.entries[:5]:
                 news_items.append({
