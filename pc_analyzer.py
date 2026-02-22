@@ -50,7 +50,7 @@ def analyze_with_api(prompt, max_retries=5):
                     "content-type": "application/json"
                 },
                 json={
-                    "model": "claude-opus-4-5-20251101",
+                    "model": "claude-sonnet-4-20250514",
                     "max_tokens": 4096,
                     "messages": [
                         {"role": "system", "content": "你是一位资深PC行业分析师，拥有20年行业经验。请提供专业、深度、可操作的分析报告。用中文回答。"},

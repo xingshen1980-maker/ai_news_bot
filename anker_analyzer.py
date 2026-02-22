@@ -44,7 +44,7 @@ def analyze_with_api(prompt, max_retries=5):
                     "content-type": "application/json"
                 },
                 json={
-                    "model": "claude-opus-4-5-20251101",
+                    "model": "claude-sonnet-4-20250514",
                     "max_tokens": 4096,
                     "messages": [
                         {"role": "system", "content": "你是一位专业的消费电子行业战略分析师。请用中文提供详细分析。"},
