@@ -44,7 +44,7 @@ def analyze_with_api(prompt, max_retries=5):
                     "content-type": "application/json"
                 },
                 json={
-                    "model": "claude-sonnet-4-20250514",
+                    "model": "claude-3-5-sonnet-20241022",
                     "max_tokens": 4096,
                     "messages": [
                         {"role": "system", "content": "你是一位专业的消费电子行业战略分析师。请用中文提供详细分析。"},
@@ -56,16 +56,10 @@ def analyze_with_api(prompt, max_retries=5):
 
             if response.status_code == 200:
                 return response.json()["choices"][0]["message"]["content"]
-            elif response.status_code >= 400 and "timeout" in response.text.lower():
-                print(f"Attempt {attempt + 1} failed (timeout), retrying...")
-                time.sleep(15)
-                continue
-            elif response.status_code >= 500:
-                print(f"Attempt {attempt + 1} failed (server error), retrying...")
-                time.sleep(15)
-                continue
             else:
-                raise Exception(f"API error: {response.status_code} - {response.text}")
+                print(f"Attempt {attempt + 1} failed: {response.status_code} - {response.text[:200]}")
+                time.sleep(15)
+                continue
         except requests.exceptions.Timeout:
             print(f"Attempt {attempt + 1} timed out, retrying...")
             time.sleep(10)
